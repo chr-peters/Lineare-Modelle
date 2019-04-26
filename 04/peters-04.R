@@ -2,6 +2,8 @@
 
 library(mvtnorm)
 
+set.seed(1234)
+
 # No. 9)
 # ======
 
@@ -75,3 +77,74 @@ plot(samples_v[1,], samples_v[2,], xlab = 'v1', ylab = 'v2', main = '10000 sampl
 
 samples_y <- replicate(10000, generate_y(), simplify = TRUE)
 plot(samples_y[1,], samples_y[2,], xlab = 'y1', ylab = 'y2', main = '10000 samples of y')
+
+# No. 11)
+# =======
+
+# a)
+
+generate_chisq <- function(df) {
+  sum(replicate(df, rnorm(1)) ** 2)
+}
+
+samples_chisq_2 <- replicate(1000, generate_chisq(2))
+plot(ecdf(samples_chisq_2), main = 'Distribution of 1000 chi squared samples with df=2')
+curve(pnorm(x), col='red', add = TRUE)
+legend('bottomright', inset=0.1, legend=c('chi squared', 'standard normal'),
+       col = c('black', 'red'), lty=c(1, 1))
+
+samples_chisq_4 <- replicate(1000, generate_chisq(4))
+plot(ecdf(samples_chisq_4), main = 'Distribution of 1000 chi squared samples with df=4')
+curve(pnorm(x), col='red', add = TRUE)
+legend('bottomright', inset=0.1, legend=c('chi squared', 'standard normal'),
+       col = c('black', 'red'), lty=c(1, 1))
+
+samples_chisq_6 <- replicate(1000, generate_chisq(6))
+plot(ecdf(samples_chisq_6), main = 'Distribution of 1000 chi squared samples with df=6')
+curve(pnorm(x), col='red', add = TRUE)
+legend('bottomright', inset=0.1, legend=c('chi squared', 'standard normal'),
+       col = c('black', 'red'), lty=c(1, 1))
+
+samples_chisq_8 <- replicate(1000, generate_chisq(8))
+plot(ecdf(samples_chisq_8), main = 'Distribution of 1000 chi squared samples with df=8')
+curve(pnorm(x), col='red', add = TRUE)
+legend('bottomright', inset=0.1, legend=c('chi squared', 'standard normal'),
+       col = c('black', 'red'), lty=c(1, 1))
+
+# Comparison:
+# As we can see, the chi squared distribution doesn't converge to a standard
+# normal distribution with increasing degrees of freedom.
+
+# b)
+
+generate_t <- function(df) {
+  rnorm(1) / sqrt(generate_chisq(df) / df)
+}
+
+samples_t_2 <- replicate(1000, generate_t(2))
+plot(ecdf(samples_t_2), main = 'Distribution of 1000 t samples with df=2')
+curve(pnorm(x), col='red', add = TRUE)
+legend('topleft', inset=0.05, legend=c('t', 'standard normal'),
+       col = c('black', 'red'), lty=c(1, 1))
+
+samples_t_4 <- replicate(1000, generate_t(4))
+plot(ecdf(samples_t_4), main = 'Distribution of 1000 t samples with df=4')
+curve(pnorm(x), col='red', add = TRUE)
+legend('topleft', inset=0.05, legend=c('t', 'standard normal'),
+       col = c('black', 'red'), lty=c(1, 1))
+
+samples_t_6 <- replicate(1000, generate_t(6))
+plot(ecdf(samples_t_6), main = 'Distribution of 1000 t samples with df=6')
+curve(pnorm(x), col='red', add = TRUE)
+legend('topleft', inset=0.05, legend=c('t', 'standard normal'),
+       col = c('black', 'red'), lty=c(1, 1))
+
+samples_t_8 <- replicate(1000, generate_t(8))
+plot(ecdf(samples_t_8), main = 'Distribution of 1000 t samples with df=8')
+curve(pnorm(x), col='red', add = TRUE)
+legend('topleft', inset=0.05, legend=c('t', 'standard normal'),
+       col = c('black', 'red'), lty=c(1, 1))
+
+# Comparison:
+# In this case we can see that the t distribution converges to a standard normal
+# distribution with increasing degrees of freedom.
