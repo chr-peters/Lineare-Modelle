@@ -75,19 +75,32 @@ beta <- solve(t(X) %*% X, t(X) %*% y)
 
 # b)
 
-# estimate the variance of the error term
-residuals <- y - X %*% beta
-n <- length(y)
-r <- 5 # rank of design matrix
-var_estimate <- 1 / (n - r) * sum(residuals**2)
+# get a scaled version of the covariance matrix
+cov_scaled <- solve(t(X) %*% X)
 
-# use this to estimate the covariance matrix
-cov_estimate <- var_estimate * solve(t(X) %*% X)
-cor_estimate <- diag(1/sqrt(diag(cov_estimate))) %*% cov_estimate %*% diag(1/sqrt(diag(cov_estimate)))
+# scale it to get the correlation matrix
+cor_estimate <- diag(1/sqrt(diag(cov_scaled))) %*% cov_scaled %*% diag(1/sqrt(diag(cov_scaled)))
 print(cor_estimate)
+
+# We can see that the correlation between b_1 (engine displacement) and b_2 (horsepower) is -0.77685540.
+# This means that the estimates of these two coefficients will vary together in
+# different directions. This is not a desirable trait because this behavior makes it difficult
+# to distinguish between the effects of engine displacement and horsepower on the price of a car.
+# One reason for this is most likely that there is a general correlation between
+# horsepower and engine displacement. (Cars with bigger engines tend to have more horsepower).
 
 # c)
 
-# estimate the new beta vector, the residuals and the variance
+# estimate the new beta vector
 beta_ridge <- solve(t(X) %*% X + 0.1 * diag(5), t(X) %*% y)
-residuals_ridge <- y - X %*% beta_ridge
+# -12360.8612982283, 248.469501354341, 160.381659732185, 13986.5685515175, 1204.63367627605
+
+# get a scaled version of the covariance matrix (cov_ridge = sigma^2 * cov_scaled_ridge)
+A <- solve(t(X) %*% X + 0.1 * diag(5)) %*% t(X)
+cov_scaled_ridge <- A %*% t(A)
+# var(b_1_ridge) = sigma^2 * 0.0003609379 (cov_scaled_ridge[3, 3])
+# var(b_1) = sigma^2 * 0.0004309017 (cov_scaled[3, 3])
+
+# As we can see, the variance as well as the absolute value of beta_1 is reduced when applying the new technique.
+# These results are still consistent with the Gauss-Markov-Theorem because the
+# new estimate of the beta coefficient vector is not unbiased.
