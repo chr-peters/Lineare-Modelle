@@ -63,4 +63,23 @@ test_beta <- function(z) {
 (test_beta(c(0.3, 1)))
 (test_beta(c(0.35, 0.5)))
 
-# as we can see, in both cases the zero hypothesis is rejected
+# As we can see, in both cases the zero hypothesis is rejected at the 10% niveau.
+# Interpretation: We can say with 90% certainty, that the true coefficients b_1 and b_2
+# are not equal to those listed in the zero hypothesis.
+
+# No. 27)
+# =======
+
+gasoline <- read.table('benzin.txt', header = TRUE)
+
+# a)
+
+model <- lm(Benzinverbrauch ~ Steuer + Einkommen + Strassen + Ausweise, data = gasoline)
+print(model$coefficients)
+
+# Interpretation:
+# Intercept: No useful way of interpretation
+# beta_1: One cent/gallon in taxes reduces per capita fuel consumption by 8 gallons a year
+# beta_2: One dollar more of yearly income reduces yearly p.c. consumption by 0.06 gallons
+# beta_3: 1000 miles of roads increase the consumption by 2.87 gallons per capita per year
+# beta_4: One percent more people with a drivers license lead to 11.89 gallons more consumption a year p.c.
