@@ -2,6 +2,8 @@
 
 library(MASS)
 
+set.seed(123)
+
 # No. 30)
 # =======
 
@@ -10,8 +12,9 @@ n <- 20000
 X <- cbind(1, 1:50)
 X_inv <- ginv(X)
 beta_real <- c(0, 1)
-alpha = 0.1
+alpha = 0.05
 
+# simulate for each rho (p)
 results <- sapply(seq(-0.8, 0.8, 0.2), function(p) {
   results_p <- replicate(n, {
     
@@ -48,3 +51,14 @@ results <- sapply(seq(-0.8, 0.8, 0.2), function(p) {
 
 colnames(results) <- seq(-0.8, 0.8, 0.2)
 print(results)
+
+# a)
+# As we can see by looking at the results, the OLS estimator for beta is still
+# unbiased, because the mean values for beta_0 and beta_1 are still 0 and 1.
+
+# b)
+# The rejection percentages of H0 can be seen in the console output.
+# Only when rho = 0, which means that the errors are independent, the test
+# seems to reject H0 roughly 5% of the time. As soon as rho gets bigger, 
+# the amount of rejection grows as well. When rho = 0.8, H0 is rejected about 50% of the time.
+# Contrary, when rho is -0.8, H0 is never rejected.
