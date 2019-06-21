@@ -21,13 +21,11 @@ var_cobbdouglas <- sum(residuals_cobbdouglas**2) / ne_cobbdouglas
 
 # find the 90% bonferroni condfidence intervals
 C <- list(matrix(c(0, 1, 0), nrow = 1), matrix(c(0, 0, 1), nrow = 1))
-sd_bonferroni <- sapply(1:2, function(i) {
-  sqrt(var_cobbdouglas * C[[i]] %*% X_inv_cobbdouglas %*%
-         t(X_inv_cobbdouglas) %*% t(C[[i]]))
-})
 intervals_bonferroni <- sapply(1:2, function(i) {
-  lower <- C[[i]] %*% beta_cobbdouglas - sd_bonferroni[i] * qt(1-0.1/4, ne_cobbdouglas)
-  upper <- C[[i]] %*% beta_cobbdouglas + sd_bonferroni[i] * qt(1-0.1/4, ne_cobbdouglas)
+  sd_est <- sqrt(var_cobbdouglas * C[[i]] %*% X_inv_cobbdouglas %*%
+                   t(X_inv_cobbdouglas) %*% t(C[[i]]))
+  lower <- C[[i]] %*% beta_cobbdouglas - sd_est * qt(1-0.1/4, ne_cobbdouglas)
+  upper <- C[[i]] %*% beta_cobbdouglas + sd_est * qt(1-0.1/4, ne_cobbdouglas)
   return(c(lower = lower, upper = upper))
 })
 intervals_bonferroni <- t(intervals_bonferroni)
@@ -55,7 +53,7 @@ print(intervals_scheffe)
 
 # draw the confidence ellipse using lm
 model_cobbdouglas <- lm(log(y) ~ log(xL) + log(xK), data = cobbdouglas)
-confidenceEllipse(model_cobbdouglas, xlab = 'beta1', ylab = 'beta2', main = 'Confidence Ellipse and Intervals', grid = FALSE)
+confidenceEllipse(model_cobbdouglas, xlab = 'beta1', ylab = 'beta2', main = 'Confidence Ellipse and Intervals for a = 10%', grid = FALSE, levels = 0.9)
 
 # draw the bonferroni intervals (red)
 abline(v = intervals_bonferroni['beta1', 'lower'], col = 'red', lwd = 2)
@@ -75,13 +73,21 @@ abline(v = 1.0569, col = 'yellow', lwd = 2)
 abline(h = 0.1237, col = 'yellow', lwd = 2)
 abline(h = 0.3424, col = 'yellow', lwd = 2)
 
+# As we can see, the Scheffe confidence intervals completely contain the
+# confidence ellipse. The intervals by Bonferroni are a bit smaller and leave
+# some parts of the ellipse out. The single confidence intervals (as drawn in yellow) which
+# don't factor in the multiple testing scenario are clearly the smallest.
+
 # c)
+
+# draw the new point given by the hypotheses
+points(0.55, 0.1, pch = 16)
 
 # Because we are dealing with a multiple test problem, we have to look at the
 # confidence intervals which take this circumstance into account, namely
-# Bonferroni and Scheffe.
-# The first hypothesis (beta1 = 0.55) lies whithin the bounds of both confidence intervals
-# which means that we can't reject it at the 10% niveau.
+# Bonferroni and Scheffe (the red and the green one, not the yellow one).
+# As we can see in the plot, Bonferroni would reject H_0 for beta2 (very closely)
+# and not for beta1. Scheffe doesn't reject H_0 for both coefficients.
 
 # No. 32)
 # =======
@@ -111,7 +117,7 @@ print(model$coefficients)
 # We can see that for whatever reason, lm doesn't use a3.
 
 # b)
-confidenceEllipse(model, main = 'Confidence Ellipse for a1 and a2 coefficients')
+confidenceEllipse(model, main = 'Confidence Ellipse for a1 and a2 coefficients', levels = 0.95)
 
 # No. 33)
 # =======
