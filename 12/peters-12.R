@@ -82,3 +82,36 @@ abline(h = 0.3424, col = 'yellow', lwd = 2)
 # Bonferroni and Scheffe.
 # The first hypothesis (beta1 = 0.55) lies whithin the bounds of both confidence intervals
 # which means that we can't reject it at the 10% niveau.
+
+# No. 32)
+# =======
+
+# a)
+
+# calculate beta manually
+y <- c(29, 32, 19, 20, 27, 24)
+X <- cbind(1, c(1, 1, 0, 0, 0, 0), c(0, 0, 1, 1, 0, 0), c(0, 0, 0, 0, 1, 1))
+B <- matrix(c(0, 1, 1, 1), nrow = 1)
+X_B <- X %*% (diag(4) - ginv(B) %*% B)
+X_B_inv <- ginv(X_B)
+beta <- X_B_inv %*% y
+
+cat('\n')
+print('Model coefficients:')
+print(beta)
+
+# now use lm
+data <- data.frame(y = y, a = as.factor(c(1, 1, 2, 2, 3, 3)))
+model <- lm(y ~ a, data = data, contrasts = list(a = 'contr.sum'))
+
+cat('\n')
+print('lm coefficients')
+print(model$coefficients)
+
+# We can see that for whatever reason, lm doesn't use a3.
+
+# b)
+confidenceEllipse(model, main = 'Confidence Ellipse for a1 and a2 coefficients')
+
+# No. 33)
+# =======
